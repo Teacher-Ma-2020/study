@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的事件使用</title>
+
+
+</head>
+<body>
+
+<div id="app">
+
+    <input type="button" value="-" @click="editcount">
+    <h2>{{ count }}</h2>
+    <input type="button" value="+" @click="addcount">
+
+</div>
+<!--引入vue.js-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    const app = new Vue({
+        el:"#app",
+        data:{
+            count:1
+        },
+        methods:{
+            //减
+            editcount(){
+                if(this.count>1){
+                    this.count--;
+                }else{
+                    alert('不能再少了');
+                }
+            },
+            //加
+            addcount(){
+                if(this.count<10){
+                    this.count++;
+                }else{
+                    alert('每个人不能超过10件!')
+                }
+
+            }
+
+        }
+
+    })
+
+</script>
+
+</body>
+</html>

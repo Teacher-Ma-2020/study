@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>01.vue中组件回顾</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
+</head>
+<body>
+<div id="app">
+
+
+    <a href="#/login">点我登录</a>
+    <a href="#/register">点我注册</a>
+
+    <!--显示路由的组件-->
+    <router-view></router-view>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="./js/vue-router.js"></script>
+<!--<script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<script>
+
+    //声明组件模板
+    const login = {
+        template:'<h1>登录</h1>'
+    };
+
+    const register = {
+        template:'<h1>注册</h1>'
+    };
+
+
+    //创建路由对象
+    const router = new VueRouter({
+        routes:[
+            {path:'/login',component:login},
+            {path:'/register',component:register}
+        ]
+    });
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            username:"小陈",
+        },
+        methods: {},
+        router:router//设置路由对象
+    });
+</script>
+</body>
+</html>

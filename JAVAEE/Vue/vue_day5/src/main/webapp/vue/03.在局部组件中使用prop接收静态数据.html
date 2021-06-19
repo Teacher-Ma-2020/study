@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>03.在局部组件中使用prop接收静态数据</title>
+</head>
+<body>
+<div id="app">
+
+
+    <!--使用组件-->
+    <login user-name="小陈" age="23"></login>
+
+</div>
+<!--引入vue-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    //声明一个组件配置对象
+    let login = {
+        template:"<div><h1>欢迎:{{ userName }} 年龄:{{ age }}</h1></div>",
+        props:['userName','age']
+    }
+    const app = new Vue({
+        el: "#app",
+        data: {},
+        methods: {},
+        components:{
+            login //组件注册
+        }
+    });
+</script>
+</body>
+</html>

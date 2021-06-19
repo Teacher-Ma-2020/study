@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的复习</title>
+</head>
+<body>
+
+
+<div id="app">
+
+
+    <h1 v-show="true">百知教育</h1>
+    <h1 v-show="isShow">百知教育</h1>
+
+    <input type="button" value="点我显示隐藏" @click="showHide">
+
+    <hr>
+
+    <h1 v-if="false">小陈老师非常单纯</h1>
+
+    <hr>
+
+    <img width="300px" :title="title"
+         :src="src">
+
+    <input type="button" value="点我改变title属性" @click="changeTitle('这是改变之后的title')">
+    <input type="button" value="点我改变src属性" @click="changeSrc('https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=169881061,963587864&fm=26&gp=0.jpg')">
+
+</div>
+
+<!--
+    1.v-show 作用: 用来控制页面中的标签元素是否展示  底层通过控制元素的display属性来进行标签的显示和不显示控制
+    2.v-if   作用: 用来控制页面中的标签元素是否展示  底层通过对dom树节点进行添加和删除来控制展示和隐藏
+    3.v-bind 作用: 用来给页面中标签元素绑定相应的属性 简化写法  v-bin:属性名 =====> :属性名
+-->
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            isShow: false,
+            title: "Vue中定义的百知教育Logo的title",
+            src:"https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2484427189,3324623370&fm=26&gp=0.jpg"
+        },
+        methods: { //用来定义事件函数
+            showHide() {
+                this.isShow = !this.isShow;
+            },
+            changeTitle(value){
+                console.log(value);
+                this.title = value;
+            },
+            changeSrc(src){
+                this.src= src;
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

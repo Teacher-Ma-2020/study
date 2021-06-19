@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的复习</title>
+</head>
+<body>
+
+
+<div id="app">
+
+    <span>{{ msg }} 小黑</span> <br>
+    <span>{{ age == 23}}</span> <br>
+    <span>{{ arr[0] +'!'}}</span> <br>
+    <span>{{ user.name.toUpperCase() }}</span> <br>
+    <hr>
+
+
+    <span v-text="msg">小黑</span>
+
+    <hr>
+    <span v-text="message">text</span>
+    <span v-html="message">html</span>
+</div>
+    <!--
+        1. v-text  v-html  指令  v-text 相当于js innerText  v-html 相当于js中innerHTML
+            注意: 指令里面不需要写插值表达式 直接书写对应数据变量名即可
+    -->
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    const app = new Vue({
+       el:"#app",
+       data:{
+           message:"<a href=''>百知教育</a>",
+           msg:"北京百知教育,期待您的加入!",
+           age:23,
+           arr:["北京校区","天津校区","河南校区"],
+           user:{name:"xiaochen",age:23,content:"他是一个单纯的少年!"}
+       }
+    });
+
+</script>
+</body>
+</html>

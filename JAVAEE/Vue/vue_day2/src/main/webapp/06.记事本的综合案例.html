@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>06.记事本的综合案例</title>
+</head>
+<body>
+<div id="app">
+
+
+    <input type="text" v-model="msg" > <input type="button" value="添加到记事本" @click="save">
+
+    <br>
+    <ul>
+        <li v-for="item,index in lists">
+            {{ index+1 }} {{ item }} <a href="javascript:;" @click="delRow(index)">删除</a>
+        </li>
+    </ul>
+
+    <br>
+    <span>总数量: {{ lists.length }} 条</span> <input type="button" v-show="lists.length!=0" value="删除所有" @click="deleteAll">
+
+</div>
+<!--
+    1.完成记事本的查询所有思路: 1).将所有数据绑定为vue实例 2).遍历vue实例中数据到页面
+    2.添加 1).添加按钮绑定事件中 2).在事件中获取输入框中数据 3).将获取的数据放入到lists里面
+    3.删除   删除所有  总数量
+-->
+<!--引入vue-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            lists:["百知教育开设大量前沿课程","百知教育良心机构"],
+            msg:"",
+        },
+        methods: {
+            save(){//添加到记事本
+                console.log(this.msg);
+                this.lists.push(this.msg);
+                this.msg = '';
+            },
+            delRow(index){//删除一条记录
+                //根据下标删除数组中某个元素
+                this.lists.splice(index,1);//参数1:从那个下标开始删除  参数2:删除几个元素
+            },
+            deleteAll(){ //删除所有数据
+                this.lists = [];
+            }
+        }
+    });
+</script>
+</body>
+</html>

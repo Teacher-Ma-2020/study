@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>05.在组件中定义组件自己data的数据</title>
+</head>
+<body>
+<div id="app">
+
+
+    <!--组件的使用-->
+    <login></login>
+
+</div>
+<!--引入vue-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    //组件声明的配置对象
+    const login = {
+        template:'<div><h1>{{ msg }} 百知教育</h1><ul><li v-for="item,index in lists">{{ index }}{{ item }}</li></ul></div>',
+        data(){
+            return {
+                msg:"hello",
+                lists:['java','spring','springboot']
+            }//组件自己内部数据
+        }
+    }
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            username:"小黑"
+        },
+        methods: {},
+        components:{
+            login //注册组件
+        }
+    });
+</script>
+</body>
+</html>

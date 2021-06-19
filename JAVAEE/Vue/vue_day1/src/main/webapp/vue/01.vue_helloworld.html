@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的第一个入门案例</title>
+
+
+</head>
+<body>
+
+{{msg}}
+
+<br>
+<hr>
+    <div id="app">
+        {{ msg }}  {{username}} {{pwd}}
+
+        <br>
+        <span>
+            {{ username }}
+            <h1>{{ msg }}</h1>
+        </span>
+
+    </div>
+
+{{msg}}
+
+
+    <!--引入vue.js-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el:"#app",  //element 用来给Vue实例定义一个作用范围
+            data:{      //用来给Vue实例定义一些相关数据
+                msg:"百知欢迎你,期待你的加入!",
+                username:"hello Vue!",
+                pwd :"12345",
+            },
+        });
+    </script>
+
+</body>
+</html>

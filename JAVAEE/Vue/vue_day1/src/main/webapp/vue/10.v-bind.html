@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的v-bind使用</title>
+
+
+    <style>
+        .aa{
+            border: 2px red solid;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <img width="300" :title="msg" :class="{aa:showCss}"  :src="src" alt="">
+
+    <input type="button" value="动态控制加入样式" @click="addCss">
+
+    <input type="button" value="改变图片" @click="changeSrc">
+
+</div>
+<!--引入vue.js-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    const app = new Vue({
+        el:"#app",
+        data:{
+            msg:"百知教育官方logo!!!!",
+            showCss:true,
+            src:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1583490365568&di=52a82bd614cd4030f97ada9441bb2d0e&imgtype=0&src=http%3A%2F%2Fimg.kanzhun.com%2Fimages%2Flogo%2F20160714%2F820a68f65b4e4a3634085055779c000c.jpg"
+        },
+        methods:{
+            addCss(){
+                this.showCss= !this.showCss;
+            },
+            changeSrc(){
+                this.src = "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1925088662,1336364220&fm=26&gp=0.jpg";
+            }
+        }
+    })
+</script>
+
+</body>
+</html>

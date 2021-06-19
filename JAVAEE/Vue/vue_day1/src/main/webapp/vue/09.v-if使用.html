@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的v-show使用</title>
+
+
+</head>
+<body>
+
+<div id="app">
+
+
+    <h2 v-if="false">百知教育</h2>
+
+    <h2 v-if="show">百知教育欢迎你的加入</h2>
+
+</div>
+<!--引入vue.js-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    const app = new Vue({
+        el:"#app",
+        data:{
+            show:false
+        },
+        methods:{
+
+        }
+    })
+</script>
+
+</body>
+</html>

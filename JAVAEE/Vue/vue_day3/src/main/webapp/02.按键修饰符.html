@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>02.按键修饰符</title>
+</head>
+<body>
+<div id="app">
+
+
+    <!--
+        enter 按键修饰符  在回车之后触发的事件
+    -->
+
+    <input type="text" v-model="msg" @keyup.enter="keyups">
+
+    <input type="text" @keyup.left="keytabs">
+
+</div>
+<!--引入vue-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            msg:"",
+        },
+        methods: {
+            keyups(){
+                console.log(this.msg);
+            },
+            keytabs(){
+                console.log("left键触发");
+            }
+        }
+    });
+</script>
+</body>
+</html>

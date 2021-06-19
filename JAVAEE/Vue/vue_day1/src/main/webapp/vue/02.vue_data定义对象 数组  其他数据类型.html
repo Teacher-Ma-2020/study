@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的第一个入门案例</title>
+
+
+</head>
+<body>
+
+    <div id="app">
+
+
+        <h3>{{ msg }}</h3>
+
+        <h3>名称:{{ user.name }} 信息:{{user.msg}}</h3>
+
+        <h3>年龄: {{ age }}</h3>
+
+        <h3>{{ lists[0] }}--{{ lists[1] }}----{{ lists[2] }}</h3>
+
+        <h3>{{ users[0].name }}</h3>
+
+    </div>
+
+    <!--引入vue.js-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+            el:"#app",
+            data: {
+                msg:"hello vue",
+                user:{name:"百知教育",msg:"百知教育欢迎你"},
+                age:23,
+                lists:["河南校区","北京校区","天津校区"],
+                users:[{name:"小黑",age:23},{name:"小明",age:26}]
+            }
+        })
+    </script>
+
+</body>
+</html>

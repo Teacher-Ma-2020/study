@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的事件使用</title>
+
+
+</head>
+<body>
+
+    <div id="app">
+
+        <h2>{{ age }}</h2>
+
+        <input type="button" value="通过v-on事件修改年龄每次+1" v-on:click="changeage">
+
+        <input type="button" value="通过@绑定时间修改年龄每次-1" @click="editage">
+
+    </div>
+
+    <!--引入vue.js-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        const app = new Vue({
+           el:"#app",  //element: 用来指定vue作用范围
+           data:{
+               age:23,
+           },    //data   : 用来定义vue实例中相关数据
+           methods:{
+               changeage:function(){
+                   this.age++;
+               },
+               editage:function(){
+                   this.age--;
+               }
+
+           }  //methods: 用来定义事件的处理函数
+        });
+    </script>
+
+</body>
+</html>

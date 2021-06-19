@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>02.局部组件的开发</title>
+</head>
+<body>
+<div id="app">
+
+
+    <login></login>
+    <login></login>
+    <login></login>
+    <login></login>
+
+</div>
+
+<!--通过模板标签形式注册局部组件-->
+<template id="loginTemplate">
+    <h1>用户登录</h1>
+</template>
+
+<!--引入vue-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    //局部组件登录模板
+    let login ={   //具体局部组件名称
+        template:'#loginTemplate'
+    };
+
+    const app = new Vue({
+        el: "#app",
+        data: {},
+        methods: {},
+        components:{  //用来注册局部组件
+            login  //注册局部组件
+        }
+    });
+</script>
+</body>
+</html>

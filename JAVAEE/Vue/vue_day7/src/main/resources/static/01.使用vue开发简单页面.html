@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>01.使用vue开发简单页面</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
+</head>
+<body>
+<div id="app">
+
+    <div class="container">
+        <div class="row" style="margin-top: 70px;">
+<div class="col-md-10 col-md-offset-1">
+    <ul class="nav nav-pills nav-justified">
+        <li role="presentation" :class="showAtice=='home'?'active':''"><a href="#/home" @click="changActive('home')">主页</a></li>
+        <li role="presentation" :class="showAtice=='user'?'active':''"><a href="#/user" @click="changActive('user')" >用户管理</a></li>
+        <li role="presentation" :class="showAtice=='student'?'active':''"><a href="#/student" @click="changActive('student')">学生管理</a></li>
+    </ul>
+</div>
+</div>
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <!--显示路由组件内容-->
+        <router-view></router-view>
+    </div>
+</div>
+</div>
+
+
+</div>
+<template id="home">
+    <div>
+        <div class="jumbotron" style="margin-top: 100px;">
+            <h1>Hello, world!</h1>
+            <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+            <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+        </div>
+    </div>
+</template>
+
+<template id="user">
+    <div>
+        <table class="table table-strip" style="margin-top: 100px;">
+            <tr>
+                <th>id</th>
+                <th>姓名</th>
+                <th>年龄</th>
+                <th>生日</th>
+                <th>操作</th>
+            </tr>
+            <tr v-for="user in users">
+                <td>{{user.id}}</td>
+                <td>{{user.name}}</td>
+                <td>{{user.age}}</td>
+                <td>{{user.bir}}</td>
+                <td><a href="" class="btn btn-default">修改</a>
+                    <a href="" class="btn btn-danger">删除</a>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+</template>
+<template id="student">
+    <div>
+        <table class="table table-strip" style="margin-top: 100px;">
+            <tr>
+                <th>id</th>
+                <th>学生姓名</th>
+                <th>学历</th>
+                <th>邮箱</th>
+                <th>操作</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>张三</td>
+                <td>23</td>
+                <td>2012-12-12</td>
+                <td><a href="" class="btn btn-default">修改</a>
+                    <a href="" class="btn btn-danger">删除</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</template>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    //1.主页组件配置对象
+    const home={
+        template:"#home"
+    }
+    //2.用户管理组件配置对象
+    const user={
+        template:"#user",
+        data(){
+            return {
+                users:[],
+            }
+        },
+        methods:{
+
+        },
+        created(){
+            //发送查询所有用户信息
+            _this = this;
+            axios.get("http://localhost:8080/user/findAll").then((res)=>{
+                console.log(res.data);
+                _this.users = res.data;
+            });
+        }
+    }
+    //3.学生管理组件的配置对象
+    const student={
+        template:"#student"
+    }
+
+    //使用路由
+    const router = new VueRouter({
+        routes:[
+            {path:'/',redirect:'/home'},
+            {path:'/home',component:home},
+            {path:'/user',component:user},
+            {path:'/student',component:student},
+        ]
+    });
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            showAtice:'home',
+        },
+        methods: {
+            changActive(value){
+                console.log("xxxx");
+                console.log(value);
+                this.showAtice = value;
+                console.log(this.showAtice);
+            }
+        },
+        router:router //注册路由
+    });
+</script>
+</body>
+</html>

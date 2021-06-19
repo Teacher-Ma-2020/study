@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue的复习</title>
+</head>
+<body>
+
+
+<div id="app">
+
+    <input type="button" value="点我触发事件" v-on:click="test('21',23,'xiaohei')">
+
+    <hr>
+    <input type="button" value="事件的简化写法" @click="test1">
+</div>
+
+<!--
+    1.事件三要素    事件源 html标签是谁  事件: 特定动作 单击 双击...  事件处理程序: 使用函数来完成
+
+    2.vue中事件定义
+        1.v-on 指令  用来给标签绑定事件
+        2.事件的参数传递
+        3.v-on 的简化写法   v-on:click   ===> 简化写法  @click="事件函数"
+-->
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+
+    const app = new Vue({
+       el:"#app",
+       data:{
+           message:"百知教育",
+       },
+       methods:{ //用来定义事件函数
+           // test:function(){
+           //     alert('test click');
+           // }
+           test(id,age,name){
+               alert('test function click');
+               console.log(id);
+               console.log(age);
+               console.log(name);
+               console.log(this.message);
+           },
+           test1(){
+               alert('test1 事件的简化写法');
+               console.log(this.message);
+           }
+       }
+    });
+
+</script>
+</body>
+</html>

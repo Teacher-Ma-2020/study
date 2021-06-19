@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>01.vue中组件回顾</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
+</head>
+<body>
+<div id="app">
+
+
+    <router-link to="/product">商品管理</router-link>
+
+    <router-view></router-view>
+
+
+
+</div>
+<template id="product">
+    <div>
+
+        <h1>商品管理</h1>
+
+        <router-link to="/product/add">商品添加</router-link>
+        <router-link to="/product/edit">商品编辑</router-link>
+
+        <router-view></router-view>
+
+    </div>
+</template>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="./js/vue-router.js"></script>
+<!--<script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<script>
+
+    //声明组件模板
+    const product={
+        template:'#product'
+    };
+
+    const add = {
+        template:'<h4>商品添加</h4>'
+    };
+
+    const edit = {
+        template:'<h4>商品编辑</h4>'
+    };
+
+    //定义路由对象
+    const router = new VueRouter({
+        routes:[
+            {
+                path:'/product',
+                component:product,
+                children:[
+                    {path:'add',component: add},
+                    {path:'edit',component: edit},
+                ]
+            },
+        ]
+    });
+
+    const app = new Vue({
+        el: "#app",
+        data: {},
+        methods: {},
+        router,//定义路由对象
+    });
+</script>
+</body>
+</html>

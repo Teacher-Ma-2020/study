@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>01.vue中组件回顾</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
+</head>
+<body>
+<div id="app">
+
+
+    <login :username="username"></login>
+
+    <register></register>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!--<script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<script>
+
+    //组件模板对象
+    const login = {
+        template:'<h1>用户登录 {{name}} {{username}}</h1>',
+        data(){
+            return {
+                name:"xiaohei"
+            }
+        },
+        props:['username']
+    }
+
+    //组件模板对象
+    const register = {
+        template:'<h1>用户注册</h1>'
+    }
+
+    const app = new Vue({
+        el: "#app",
+        data: {
+            username:"小陈",
+        },
+        methods: {},
+        components:{
+            login,
+            register,
+        }
+    });
+</script>
+</body>
+</html>
