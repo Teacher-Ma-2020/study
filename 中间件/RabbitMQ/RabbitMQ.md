@@ -1914,3 +1914,89 @@ public class DeadConsumer {
 
 ## 优先队列
 
+只有当消费者不足,即消息无法被即使消费而阻塞的时候,优先队列才会根据优先级来分配任务的执行顺序.
+
+**配置类**
+
+```java
+@Configuration
+public class priQueue {
+    private static final String EXCHANGE = "priority-exchange";
+
+    public static final String QUEUE = "priority-queue";
+
+    private static final String ROUTING_KEY = "priority.queue";
+    @Bean
+    DirectExchange exchange1(){
+        return new DirectExchange(EXCHANGE);
+    }
+    @Bean
+    Queue queue1(){
+        Map<String,Object>map = new HashMap<>();
+        map.put("x-max-priority",10);//设置最大的优先级数量
+        return new Queue(QUEUE,true,false,false,map);
+    }
+    @Bean
+    public Binding binding1(){
+        return BindingBuilder.bind(queue1()).to(exchange1()).with(ROUTING_KEY);
+    }
+}
+
+
+```
+
+**生产者**
+
+```java
+
+@Component
+public class priConsumer {
+    private static final String EXCHANGE = "priority-exchange";
+
+    public static final String QUEUE = "priority-queue";
+
+    private static final String ROUTING_KEY = "priority.queue";
+    @Autowired
+    RabbitTemplate template;
+    public void test(){
+        for(int i=10;i>1;i--){
+            int finalI = i;
+            template.convertAndSend(EXCHANGE,ROUTING_KEY,"queue:"+i, message -> {
+                message.getMessageProperties().setPriority(finalI);
+                return message;
+            });
+        }
+
+    }
+}
+```
+
+**消费者**
+
+```java
+@Component
+@RabbitListener(queues ="priority-queue")
+public class pricon {
+    @RabbitHandler
+    public void hand(String str){
+        System.out.println("接受到了一个消息:"+str);
+    }
+}
+```
+
+**结果**
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20200416204305744.png)
+
+## 惰性队列
+
+- 当消息过多时，可以实现惰性队列
+- 消息存在内存中，减少rabbitmq的内存消耗
+
+```java
+Map<String, Object> args = new HashMap<String, Object>();
+args.put("x-queue-mode", "lazy");
+channel.queueDeclare("myqueue", false, false, false, args);
+```
+
+![image-20210719195427236](img\29.png)
+

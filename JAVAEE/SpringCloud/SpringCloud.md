@@ -1,18 +1,8 @@
+[TOC]
 
 
 
-
-# SpringCloud
-
-参考视频：https://www.bilibili.com/video/BV18E411x7eT
-
-参考博客：https://blog.csdn.net/u011863024/article/details/114298270 （强烈推荐）
-
-
-
-## 简介
-
-### 微服务介绍
+# 微服务介绍
 
 - 微服务是一种架构风格
 - 一个应用拆分为一组小型服务
@@ -25,7 +15,7 @@
 
 
 
-### 版本选择 
+## 版本选择 
 
 ![image-20210613102712321](img\2.png)
 
@@ -46,11 +36,124 @@
 
 
 
-### 组件介绍
+## 组件介绍
 
 ![image-20210613104829472](img\3.png)
 
+
+
+
+
+# SpringCloud   H版
+
 ![img](https://img-blog.csdnimg.cn/img_convert/b39a21012bed11a837c1edff840e5024.png)
+
+
+
+**父pom**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>  
+
+    <groupId>com.lun</groupId>
+    <artifactId>LearnCloud</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging><!-- 这里添加，注意不是jar或war -->
+    
+    <!-- 统一管理jar包版本 -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <junit.version>4.12</junit.version>
+        <log4j.version>1.2.17</log4j.version>
+        <lombok.version>1.16.18</lombok.version>
+        <mysql.version>5.1.47</mysql.version>
+        <druid.version>1.1.16</druid.version>
+        <mybatis.spring.boot.version>1.3.0</mybatis.spring.boot.version>
+    </properties>
+    
+    <!-- 子模块继承之后，提供作用：
+		锁定版本+子modlue不用写groupId和version -->
+    <dependencyManagement>
+        <dependencies>
+            <!--spring boot 2.2.2-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.2.2.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--spring cloud Hoxton.SR1-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Hoxton.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--spring cloud alibaba 2.1.0.RELEASE-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2.1.0.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <optional>true</optional>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <addResources>true</addResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+```
 
 
 
@@ -72,11 +175,64 @@
 #### 服务注册
 
 ```xml
-<!--eureka-server-->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-</dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-eureka-server7001</artifactId>
+
+    <dependencies>
+        <!--eureka-server-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
+        <!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+        <dependency>
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--boot web actuator-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--一般通用配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
+
 ```
 
 **Eureka Server**提供服务注册
@@ -364,23 +520,67 @@ eureka:
 #### 服务注册
 
 ```xml
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
-    <!--先排除自带的zookeeper3.5.3 防止与3.4.9起冲突-->
-    <exclusions>
-        <exclusion>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-provider-payment8004</artifactId>
+    <dependencies>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency><!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- SpringBoot整合zookeeper客户端 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+            <!--先排除自带的zookeeper3.5.3 防止与3.4.9起冲突-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--添加zookeeper3.4.9版本-->
+        <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-<!--添加zookeeper3.4.9版本-->
-<dependency>
-    <groupId>org.apache.zookeeper</groupId>
-    <artifactId>zookeeper</artifactId>
-    <version>3.4.9</version>
-</dependency>
+            <version>3.4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
 ```
 
 ```yaml
@@ -415,24 +615,66 @@ public class PaymentMain8004 {
 #### 消费注册
 
 ```xml
-<!-- SpringBoot整合zookeeper客户端 -->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
-    <!--先排除自带的zookeeper-->
-    <exclusions>
-        <exclusion>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-provider-payment8004</artifactId>
+    <dependencies>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency><!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- SpringBoot整合zookeeper客户端 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+            <!--先排除自带的zookeeper3.5.3 防止与3.4.9起冲突-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.zookeeper</groupId>
+                    <artifactId>zookeeper</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--添加zookeeper3.4.9版本-->
+        <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-<!--添加zookeeper3.4.9版本-->
-<dependency>
-    <groupId>org.apache.zookeeper</groupId>
-    <artifactId>zookeeper</artifactId>
-    <version>3.4.12</version>
-</dependency>
+            <version>3.4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
 ```
 
 ```yaml
@@ -495,11 +737,71 @@ consul agent -dev
 #### 服务注册
 
 ```xml
-<!--SpringCloud consul-server -->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-consul-discovery</artifactId>
-</dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-providerconsul-payment8006</artifactId>
+    <dependencies>
+        <!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+        <dependency>
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--SpringCloud consul-server -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+        </dependency>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
 ```
 
 ```yml
@@ -528,6 +830,57 @@ public class PaymentMain8006 {
 
 
 #### 消费注册
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-consumerconsul-order80</artifactId>
+    <dependencies>
+        <!--SpringCloud consul-server -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+        </dependency>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+
 
 - 注册同上
 - 调用服务
@@ -560,11 +913,11 @@ public class OrderController {
 
 CAP：
 
-- C：Consistency (强一致性)
+- C：Consistency (一致性)
 
 - A：Availability (可用性)
 
-- P：Partition tolerance （分区容错性)
+- P：Partition tolerance （容错性)
 
 
 ![img](https://img-blog.csdnimg.cn/img_convert/b41e0791c9652955dd3a2bc9d2d60983.png)
@@ -597,10 +950,6 @@ Spring Cloud Ribbon是基于Netflix Ribbon实现的一套**客户端负载均衡
 ```
 
 这是因为spring-cloud-starter-netflix-eureka-client自带了spring-cloud-starter-ribbon引用。
-
-
-
-
 
 ```java
 @Configuration
@@ -708,11 +1057,65 @@ public class OrderMain80 {
 - OpenFeign的@Feignclient可以解析SpringMVC的@RequestMapping注解下的接口，并通过动态代理的方式产生实现类，实现类中做负载均衡并调用其他服务。
 
 ```xml
-<!--openfeign-->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-openfeign</artifactId>
-</dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-consumer-feign-order80</artifactId>
+
+    <dependencies>
+        <!--openfeign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!--eureka client-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+        <dependency>
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--web-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--一般基础通用配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
 ```
 
 
@@ -803,6 +1206,37 @@ ribbon:
 
 
 
+
+
+#### 兜底方法
+
+- 当请求不到服务提供者的方法时，此时我们需要配置兜底方法
+
+> **service接口**
+
+```java
+@FeignClient(value = "nacos-payment-provider",fallback = PaymentServiceImpl.class)   //使用fallback配置实现兜底方法
+public interface PaymentService {
+    @GetMapping("/payment/nacos/{id}")
+    public String getPayment(@PathVariable("id") Integer id);
+}
+```
+
+> **实现类**
+
+```java
+@Component
+public class PaymentServiceImpl implements PaymentService {
+
+    @Override
+    public String getPayment(Integer id) {
+        return "方法出错啦 老铁";
+    }
+}
+```
+
+
+
 #### 日志
 
 Feign提供了日志打印功能，我们可以通过配置来调整日恙级别，从而了解Feign 中 Http请求的细节。
@@ -871,11 +1305,63 @@ Hystrix是一个用于处理分布式系统的**延迟**和**容错**的开源�
 
 
 ```xml
-<!--hystrix-->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-</dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cloud2020</artifactId>
+        <groupId>com.atguigu.springcloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-provider-hystrix-payment8001</artifactId>
+
+    <dependencies>
+        <!--hystrix-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+        <!--eureka client-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <!--web-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency><!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
 ```
 
 
@@ -1182,16 +1668,49 @@ public String doSomething() {
 注册端加入依赖
 
 ```xml
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-</dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-consumer-hystrix-dashboard9001</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
 ```
 ```yml
 server:
@@ -1290,11 +1809,57 @@ public class PaymentHystrixMain8001
 #### 项目搭建
 
 ```xml
-    <!--gateway-->
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-starter-gateway</artifactId>
-    </dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-gateway-gateway9527</artifactId>
+
+    <dependencies>
+        <!--gateway-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <!--eureka-client-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+        <dependency>
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--一般基础配置类-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
 ```
 
 ```yaml
@@ -1610,6 +2175,8 @@ public class GateWayFilter implements GlobalFilter, Ordered {
 
 ### Config
 
+#### 配置中心
+
 ![img](https://img-blog.csdnimg.cn/img_convert/d5462e3b8c3a063561f5f8fc7fde327e.png)
 
 SpringCloud Config为微服务架构中的微服务提供集中化的外部配置支持，配置服务器为各个不同微服务应用的所有环境提供了一个中心化的外部配置。
@@ -1617,10 +2184,62 @@ SpringCloud Config为微服务架构中的微服务提供集中化的外部配�
 
 
 ```xml
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-config-server</artifactId>
-    </dependency>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-config-center-3344</artifactId>
+
+    <dependencies>
+        <!--添加消息总线RabbitMQ支持-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
 ```
 
 **主启动**
@@ -1635,55 +2254,1602 @@ public class ConfigMain3344 {
 }
 ```
 
-**yml配置文件**
+**Github上设置配置文件**
 
-```yml
+- application-dev.yml
+
+```yaml
+config:
+  info: "master branch,springcloud-config/config-dev.yml version=7"
+```
+
+- application-prod.yml
+
+```yaml
+config:
+  info: "master branch,springcloud-config/config-prod.yml version=1"
+```
+
+- config-test.yml
+
+```yaml
+config:
+  info: "master branch,springcloud-config/config-test.yml version=1" 
+```
+
+
+
+**访问网址**：http://localhost:3344/master/application-dev.yml  即可获得配置文件
+
+- 格式：/ {label} /  {application}-{profile}.yml
+
+![image-20210720094404436](img\17.png)
+
+
+
+#### 客户端
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-config-client-3355</artifactId>
+
+    <dependencies>
+        <!--添加消息总线RabbitMQ支持-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+</project>
+
+```
+
+
+
+- 负责读取3344配置中心的配置文件
+
+
+
+**配置文件**
+
+```yaml
 server:
-  port: 3344
+  port: 3355
 
 spring:
   application:
-    name:  cloud-config-center #注册进Eureka服务器的微服务名
+    name: config-client
   cloud:
+    #Config客户端配置
     config:
-      server:
-        git:
-          uri: https://github.com/Teacher-Ma-2020/springcloud-config.git #GitHub上面的git仓库名字
-          ####搜索目录
-          search-paths:
-            - springcloud-config
+      label: master #分支名称
+      name: config #配置文件名称
+      profile: dev #读取后缀名称   上述3个综合：master分支上config-dev.yml的配置文件被读取http://config-3344.com:3344/master/config-dev.yml
+      uri: http://localhost:3344 #配置中心地址k
 
-      ####读取分支
-      label: master
 
 #服务注册到eureka地址
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka7001.com:7001/eureka,http://eureka7002.com:7002/eureka
+      defaultZone: http://localhost:7001/eureka
+
+
 ```
 
-**访问网址**：http://localhost:3344/master/application.yml  即可获得配置文件
+**主启动**
 
-- 格式：/ {label} /  {application}-{profile}.yml
+```java
+@EnableEurekaClient
+@SpringBootApplication
+public class ConfigClientMain3355
+{
+    public static void main(String[] args) {
+            SpringApplication.run(ConfigClientMain3355.class, args);
+    }
+}
+```
 
-![image-20210712092855659](img\17.png)
+**业务类**
+
+```java
+@RestController
+@RefreshScope
+public class ConfigClientController
+{
+    @Value("${config.info}")
+    private String configInfo;
+
+    @GetMapping("/configInfo")
+    public String getConfigInfo()
+    {
+        return configInfo;
+    }
+}
+```
+
+**测试**
+
+启动Config配置中心3344微服务并自测
+
+- http://config-3344.com:3344/master/config-prod.yml
+- http://config-3344.com:3344/master/config-dev.yml
+
+启动3355作为Client准备访问
+
+- http://localhost:3355/configlnfo
+
+
+
+#### 动态刷新（客户端）
+
+当我们**修改远程Github配置仓库**后
+
+- 刷新3344，发现ConfigServer配置中心响应 （需要等待）
+- 刷新3355，发现ConfigClient客户端没有任何响应
+- 3355没有变化除非自己重启或者重新加载
+
+
+
+**为了避免**每次更新配置都要重启客户端微服务3355
+
+- 加入依赖配置
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+
+- 加入配置文件
+
+```yaml
+# 暴露监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+```
+
+- 加入@RefreshScope
+
+```java
+@RestController
+@RefreshScope//<-----
+public class ConfigClientController
+{
+	...
+}
+```
+
+- 通过cmd 发送  
+
+```cmd
+curl -X POST "http://localhost:3355/actuator/refresh"
+```
+
+**即可完成 客户端3355的配置刷新**
 
 
 
 
-
-## 服务总线
 
 ### BUS
 
-Spring Cloud Bus是用来将分布式系统的节点与轻量级消息系统链接起来的框架，它整合了Java的事件处理机制和消息中间件的功能。Spring Clud Bus目前支持RabbitMQ和Kafka。
+Spring Cloud Bus 配合Spring Cloud Config 使用可以实现配置的动态刷新。
+
+
+
+![img](https://img-blog.csdnimg.cn/img_convert/26c6ced30935219d4717814a446eb67a.png)
+
+
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-config-client-3366</artifactId>
+
+    <dependencies>
+        <!--添加消息总线RabbitMQ支持-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
+```
+
+- 溜了溜了 (●ˇ∀ˇ●) 
+
+
+
+
+
+
+# SpringCloud Alibaba
+
+Spring Cloud Alibaba 致力于提供微服务开发的一站式解决方案。此项目包含开发分布式应用微服务的必需组件，方便开发者通过 Spring Cloud 编程模型轻松使用这些组件来开发分布式应用服务。
 
 **能干嘛**
 
-Spring Cloud Bus能管理和传播分布式系统间的消息，就像一个分布式执行器，可用于广播状态更改、事件推送等，也可以当作微服务间的通信通道。
+- **Sentinel**：把流量作为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性。
+- **Nacos**：一个更易于构建云原生应用的动态服务发现、配置管理和服务管理平台。
+- **RocketMQ**：一款开源的分布式消息系统，基于高可用分布式集群技术，提供低延时的、高可靠的消息发布与订阅服务。
+- **Dubbo**：Apache Dubbo™ 是一款高性能 Java RPC 框架。
+- **Seata**：阿里巴巴开源产品，一个易于使用的高性能微服务分布式**事务解决方案**。
+- **Alibaba Cloud OSS**: 阿里云对象存储服务（Object Storage Service，简称 OSS），是阿里云提供的海量、安全、低成本、高可靠的云存储服务。您可以在任何应用、任何时间、任何地点存储和访问任意类型的数据。
+- **Alibaba Cloud SchedulerX**: 阿里中间件团队开发的一款分布式任务调度产品，提供秒级、精准、高可靠、高可用的定时（基于 Cron 表达式）任务调度服务。
+- **Alibaba Cloud SMS**: 覆盖全球的短信服务，友好、高效、智能的互联化通讯能力，帮助企业迅速搭建客户触达通道。
 
-![img](https://img-blog.csdnimg.cn/img_convert/26c6ced30935219d4717814a446eb67a.png)
+
+
+
+
+## Nacos
+
+**介绍**
+
+- 一个更易于构建云原生应用的动态服务发现、配置管理和服务管理平台。
+- Nacos: Dynamic Naming and Configuration Service
+- Nacos就是注册中心＋配置中心的组合 -> **Nacos = Eureka+Config+Bus**
+
+
+
+**安装**
+
+- 从nacos官网 https://nacos.io/zh-cn/index.html 下载安装包
+
+- tar -xvf nacos-server-1.1.4.tar.gz 解压
+
+  **启动：**
+
+```shell
+cd  /nacos/bin    #nacos bin目录
+sh startup.sh -m standalone
+```
+
+**访问**：localhost:8848/nacos，输入默认账号密码：nacos，nacos
+
+![image-20210720230130408](img\18.png)
+
+
+
+
+
+
+
+### 服务中心
+
+
+
+#### 生产者
+
+父pom
+
+````xml
+<dependencyManagement>
+    <dependencies>
+        <!--spring cloud alibaba 2.1.0.RELEASE-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>2.1.0.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+````
+
+**依赖**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cloud2020</artifactId>
+        <groupId>com.atguigu.springcloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloudalibaba-provider-payment9001</artifactId>
+
+    <dependencies>
+        <!--SpringCloud ailibaba nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+
+```
+
+**yml**
+
+```yaml
+server:
+  port: 9001
+
+spring:
+  application:
+    name: nacos-payment-provider  #配置生产者名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.43.55.*:8848 #配置Nacos地址
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+```
+
+**主启动**
+
+```java
+@SpringBootApplication
+@EnableDiscoveryClient
+public class PaymentMain9001 {
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentMain9001.class,args);
+    }
+}
+```
+
+**业务**
+
+```java
+@RestController
+public class PaymentController {
+    @Value("${server.port}")
+    private String serverPort;
+
+    @GetMapping("/payment/nacos/{id}")
+    public String getPayment(@PathVariable("id") Integer id){
+        return "nacos registry, serverPort: "+ serverPort+"\t id"+id;
+    }
+}
+```
+
+
+
+- 再配置相同的生产者9002
+
+![image-20210721232538933](img\19.png)
+
+
+
+#### 消费者
+
+**xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>LearnCloud</artifactId>
+        <groupId>com.lun.springcloud</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloudalibaba-consumer-nacos-order83</artifactId>
+
+    <dependencies>
+        <!--SpringCloud ailibaba nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+        <dependency>
+            <groupId>com.lun.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <!-- SpringBoot整合Web组件 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
+```
+
+
+
+**yml配置文件**
+
+```yaml
+server:
+  port: 83
+
+spring:
+  application:
+    name: nacos-order-consumer
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.43.55.*:8848
+
+#消费者访问服务名称
+service-url:
+  nacos-user-service: http://nacos-payment-provider
+```
+
+**主启动**
+
+```java
+@EnableDiscoveryClient
+@SpringBootApplication
+public class OrderNacosMain83 {
+    public static void main(String[] args) {
+        SpringApplication.run(OrderNacosMain83.class,args);
+    }
+}
+```
+
+**Config** 
+
+```java
+@Configuration
+public class ApplicationContextConfig
+{
+    @Bean
+    @LoadBalanced          //负载均衡
+    public RestTemplate getRestTemplate()
+    {
+        return new RestTemplate();  
+    }
+}
+```
+
+**调取服务**
+
+```java
+@RestController
+@Slf4j
+public class OrderController {
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${service-url.nacos-user-service}")   //读取配置文件服务名
+    private String serverUrl;
+
+    @GetMapping(value = "/consumer/payment/nacos/{id}")    
+    public String paymentInfo(@PathVariable("id") Long id)
+    {
+        return restTemplate.getForObject(serverUrl+"/payment/nacos/"+id,String.class);   //调取服务
+    }
+
+}
+```
+
+![image-20210721233801440](img\20.png)
+
+- 访问http://localhost:83/consumer/payment/nacos/13 
+- 即可实现调取服务提供者，并实现负载均衡
+
+
+
+
+
+### 配置中心
+
+Nacos同springcloud-config一样，在项目初始化时，要保证先从配置中心进行配置拉取，拉取配置之后，才能保证项目的正常启动。
+
+springboot中配置文件的加载是存在优先级顺序的，**bootstrap优先级高于application**
+
+
+
+配置中心读取格式：
+
+```
+${spring.application.name)}-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+
+{项目名}-{运行环境}.{配置文件格式}
+
+nacos-config-client-dev.yaml
+```
+
+
+
+#### 添加、读取配置
+
+配置新增
+
+![img](https://img-blog.csdnimg.cn/img_convert/05d45948bf637614dbd70e2bc8ce992d.png)
+
+Nacos界面配置对应 - 设置DataId
+
+![img](https://img-blog.csdnimg.cn/img_convert/c61619bbe5ea16f34efca8103b0f90ba.png)
+
+
+
+
+
+**依赖**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cloud2020</artifactId>
+        <groupId>com.atguigu.springcloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloudalibaba-config-nacos-client3377</artifactId>
+
+    <dependencies>
+        <!--nacos-config-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+        <!--nacos-discovery-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--web + actuator-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--一般基础配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+
+```
+
+ 
+
+**配置文件（bootstrap.yml ~~~~~）**
+
+```yaml
+# nacos配置
+server:
+  port: 3377
+
+spring:
+  application:
+    name: nacos-config-client
+  cloud:
+    nacos:
+      config:
+        server-addr: 121.43.55.*:8848 #Nacos作为配置中心地址
+        file-extension: yaml #指定yaml格式的配置
+
+  profiles:
+    active: dev # 表示开发环境
+#        group: DEV_GROUP
+#        namespace: 7d8f0f5a-6a53-4785-9686-dd460158e5d4
+```
+
+**配置文件（application.yml）**
+
+```yaml
+spring:
+  application:
+    name: nacos-config-client
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.43.55.*:8848 #Nacos服务注册中心地址
+```
+
+**主启动**
+
+```java
+@EnableDiscoveryClient
+@SpringBootApplication
+public class NacosConfigClientMain3377
+{
+    public static void main(String[] args) {
+        SpringApplication.run(NacosConfigClientMain3377.class, args);
+    }
+}
+```
+
+**读取配置信息**
+
+```java
+@RestController
+@RefreshScope          //支持Nacos的动态刷新功能。
+public class ConfigClientController
+{
+    @Value("${config.info}")
+    private String configInfo;
+
+    @GetMapping("/config/info")
+    public String getConfigInfo() {
+        return configInfo;
+    }
+}
+```
+
+- 访问控制层http://localhost:3377/config/info，即可读取配置文件
+- **配置@RefreshScope注解**，修改配置中心配置文件，即可实现实时刷新，
+
+
+
+
+
+#### 命名空间、分组
+
+
+
+**分组**
+
+通过Group实现环境区分 - 新建Group
+
+![img](https://img-blog.csdnimg.cn/img_convert/bdf592aa566fe50f7f454118a70ca03c.png)
+
+
+
+在nacos图形界面控制台上面新建配置文件DatalD
+
+![img](https://img-blog.csdnimg.cn/img_convert/28aee2b45901bbb9a6776d5c4398a6bb.png)
+
+**bootstrap+application**
+
+在config下增加一条group的配置即可。可配置为DEV_GROUP或TEST GROUP
+
+![img](https://img-blog.csdnimg.cn/img_convert/342a167a8bd948d8ba5cbfd760cf66a6.png)
+
+**命名空间**
+
+新建dev/test的Namespace
+
+![img](https://img-blog.csdnimg.cn/img_convert/a10c71978c75c214aca5fa7057bb2834.png)
+
+回到服务管理-服务列表查看
+
+![img](https://img-blog.csdnimg.cn/img_convert/2a9f3fa415f5cead0219d404a47131a0.png)
+
+按照域名配置填写
+
+![img](https://img-blog.csdnimg.cn/img_convert/2177c126090c0db553a8ce77e838a7c9.png)
+
+**配置文件**
+
+```yaml
+server:
+  port: 3377
+
+spring:
+  application:
+    name: nacos-config-client
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #Nacos服务注册中心地址
+      config:
+        server-addr: localhost:8848 #Nacos作为配置中心地址
+        file-extension: yaml #指定yaml格式的配置
+        group: DEV_GROUP
+        namespace: 7d8f0f5a-6a53-4785-9686-dd460158e5d4 #<------------指定namespace
+```
+
+
+
+### 持久化（mysql）
+
+Nacos默认自带的是嵌入式数据库derby，nacos的pom.xml中可以看出。
+
+derby到mysql切换配置步骤：
+
+- nacos-server-1.1.4\nacos\conf录下找到nacos-mysql.sql文件，执行脚本。
+- nacos-server-1.1.4\nacos\conf目录下找到application.properties，添加以下配置（按需修改对应值）。
+
+```properties
+spring.datasource.platform=mysql
+db.num=1
+db.url.0=jdbc:mysql://localhost:3306/nacos_devtest?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+db.user=root
+db.password=1234
+```
+
+**即可实现服务注册mysql持久化**
+
+
+
+
+
+### 集群
+
+- 只有一台服务器~
+- 溜了、溜了
+
+
+
+## Sentinel
+
+**Sentinel 是什么？**
+
+随着微服务的流行，服务和服务之间的稳定性变得越来越重要。Sentinel 以流量为切入点，从**流量控制、熔断降级、系统负载**保护等多个维度保护服务的稳定性。
+
+Sentinel 的**主要特性**：
+
+![img](https://img-blog.csdnimg.cn/img_convert/e4efa9c3547366ae4f747ad4007f6447.png)
+
+> Hystrix与Sentinel比较：
+
+- Hystrix
+  1. 需要我们程序员自己手工搭建监控平台
+  2. 没有一套web界面可以给我们进行更加细粒度化得配置流控、速率控制、服务熔断、服务降级
+- Sentinel
+  1. 单独一个组件，可以独立出来。
+  2. 直接界面化的细粒度统一配置。
+
+
+
+**下载**
+
+- https://github.com/alibaba/Sentinel/releases
+- 下载到本地sentinel-dashboard-1.7.0.jar
+
+运行
+
+- Java 8 环境
+- 8080端口不能被占用
+
+```bash
+java -jar sentinel-dashboard-1.7.0.jar 
+```
+
+登陆
+
+- http://localhost:8080/
+- 登录账号密码均为sentinel
+
+
+
+### 服务监控
+
+**新建工程 - cloudalibaba-sentinel-service8401**
+
+依赖
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cloud2020</artifactId>
+        <groupId>com.atguigu.springcloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloudalibaba-sentinel-service8401</artifactId>
+
+    <dependencies>
+        <dependency><!-- 引入自己定义的api通用包，可以使用Payment支付Entity -->
+            <groupId>com.atguigu.springcloud</groupId>
+            <artifactId>cloud-api-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--SpringCloud ailibaba nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!--SpringCloud ailibaba sentinel-datasource-nacos 后续做持久化用到-->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+        </dependency>
+        <!--SpringCloud ailibaba sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <!--openfeign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!-- SpringBoot整合Web组件+actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--日常通用jar包配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>4.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>
+
+```
+
+**配置文件**
+
+```yaml
+server:
+  port: 8401
+
+spring:
+  application:
+    name: cloudalibaba-sentinel-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.43.55.23:8848 #Nacos服务注册中心地址
+    sentinel:
+      transport:
+        dashboard: localhost:8080 #配置Sentinel dashboard地址     尝试使用linux启动  结果方法监控为空 只好在本地注册了
+        port: 8720
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+feign:
+  sentinel:
+    enabled: true # 激活Sentinel对Feign的支持
+```
+
+**主启动**
+
+```java
+@EnableDiscoveryClient
+@SpringBootApplication
+public class MainApp8401 {
+    public static void main(String[] args) {
+        SpringApplication.run(MainApp8401.class, args);
+    }
+}
+```
+
+**控制层**
+
+```java
+@RestController
+@Slf4j
+public class FlowLimitController {
+    @GetMapping("/testA")
+    public String testA()
+    {
+        return "------testA";
+    }
+
+    @GetMapping("/testB")
+    public String testB()
+    {
+        log.info(Thread.currentThread().getName()+"\t"+"...testB");
+        return "------testB";
+    }
+}
+```
+
+**启动8401微服务后查看sentienl控制台**
+
+- 刚启动，空空如也，啥都没有
+- Sentinel采用的**懒加载**
+
+![img](https://img-blog.csdnimg.cn/img_convert/bab574546fe65f719c095cf7d9e1db64.png)
+
+- 执行一次访问即可
+- http://localhost:8401/testA
+- http://localhost:8401/testB
+
+![img](https://img-blog.csdnimg.cn/img_convert/cf6561c14a2214b90c9002f2161b296f.png)
+
+
+
+
+
+### 服务限流
+
+![img](https://img-blog.csdnimg.cn/img_convert/d8ae2bea252af0bb278332b3aeb8fb77.png)
+
+
+
+**资源名**：唯一名称，默认请求路径。
+
+**针对来源**：Sentinel可以针对调用者进行限流，填写微服务名，默认default（不区分来源）。
+
+
+
+#### 阈值类型/单机阈值
+
+- QPS(每秒钟的请求数量)︰当调用该API的QPS达到阈值的时候，进行限流。
+
+![img](https://img-blog.csdnimg.cn/img_convert/56642cc2b7dd5b0d1252235c84f69173.png)
+
+- 线程数：当调用该API的**线程**数达到阈值的时候，进行限流。
+
+![img](https://img-blog.csdnimg.cn/img_convert/65af4de19564cceebe7cd67589babd69.png)
+
+
+
+
+
+
+
+#### 流控模式
+
+- 直接：API达到限流条件时，直接限流。
+- **关联**：当关联的资源达到阈值时，就限流自己。
+- 链路：只记录指定链路上的流量（指定资源从入口资源进来的流量，如果达到阈值，就进行限流)【API级别的针对来源】。
+
+
+
+**关联**
+
+- 当自己关联的资源达到阈值时，就限流自己
+- 当与A关联的资源B达到阀值后，就限流A自己（B惹事，A挂了）
+
+**设置testA**
+
+当关联资源/testB的QPS阀值超过1时，就限流/testA的Rest访问地址，**当关联资源到阈值后限制配置好的资源名**。
+
+![img](https://img-blog.csdnimg.cn/img_convert/12cd41ae91ba50fe3b5525bab7bc3805.png)
+
+
+
+
+
+#### 流控效果
+
+- 快速失败：直接失败，抛异常。
+- Warm up：根据Code Factor（冷加载因子，默认3）的值，从阈值/codeFactor，经过预热时长，才达到设置的QPS阈值。
+- 排队等待：匀速排队，让请求以匀速的速度通过，阈值类型必须设置为QPS，否则无效。
+
+
+
+**WarmUp**
+
+可以将某个方法设的初始QPS设置为阈值的1/3  （默认为1/3），当到达高访问阶段时，再开放到最大QPS阶段
+
+- 案例，阀值为10+预热时长设置5秒。
+
+- 系统初始化的阀值为10/ 3约等于3,即阀值刚开始为3;然后过了5秒后阀值才慢慢升高恢复到10
+
+
+![img](https://img-blog.csdnimg.cn/img_convert/c26846d68d79eae1e962f37942a2c99f.png)
+
+应用场景
+
+如：秒杀系统在开启的瞬间，会有很多流量上来，很有可能把系统打死，预热方式就是把为了保护系统，可慢慢的把流量放进来,慢慢的把阀值增长到设置的阀值。
+
+
+**排队等待**
+
+匀速排队，让请求以均匀的速度通过，阀值类型必须设成QPS，否则无效。
+
+设置：/testA每秒1次请求，超过的话就排队等待，等待的超时时间为20000毫秒。
+
+![img](https://img-blog.csdnimg.cn/img_convert/0ddd217545dd0fe2b1f251dbea814ac2.png)
+
+
+
+
+
+### 服务降级
+
+
+
+![img](https://img-blog.csdnimg.cn/img_convert/6a002ef360a4e5f20ee2748a092f0211.png)
+
+RT（平均响应时间，秒级）
+
+- 平均响应时间 超出阈值 且 在时间窗口内通过的请求>=5，两个条件同时满足后触发降级。
+- 窗口期过后关闭断路器。
+- RT最大4900（更大的需要通过-Dcsp.sentinel.statistic.max.rt=XXXX才能生效）。
+
+异常比列（秒级）
+
+- QPS >= 5且异常比例（秒级统计）超过阈值时，触发降级;时间窗口结束后，关闭降级 。
+
+异常数(分钟级)
+
+- 异常数(分钟统计）超过阈值时，触发降级;时间窗口结束后，关闭降级
+
+
+
+#### RT
+
+![img](https://img-blog.csdnimg.cn/img_convert/3a608908cef3d557322967e6bc0e5696.png)
+
+```java
+@GetMapping("/testD")
+public String testD() {
+    try { 
+        TimeUnit.SECONDS.sleep(1); 
+    } catch (InterruptedException e) { 
+        e.printStackTrace(); 
+    }
+    log.info("testD 测试RT");
+}
+```
+- 默认当某个方法请求大于5，且平均处理时间大于200ms时，便发生服务降级
+
+
+
+#### 异常比例
+
+![img](https://img-blog.csdnimg.cn/img_convert/ab66591ba085c32e9303d96be7b44f0d.png)
+
+```java
+@GetMapping("/testD")
+public String testD() {
+    log.info("testD 异常比例");
+    int age = 10/0;
+    return "------testD";
+}
+```
+
+- 默认当某个方法请求大于5，且发送异常的比例超过0.2，便发生服务降级
+
+
+
+
+
+#### 异常数
+
+![img](https://img-blog.csdnimg.cn/img_convert/218fe52e19c07b30bbf4d994d05e6a8e.png)
+
+- **异常数是按照分钟统计的，时间窗口一定要大于等于60秒**。
+- 达到指定的异常数，便发生熔断降级
+
+
+
+
+
+### 热点key
+
+何为热点？热点即经常访问的数据。很多时候我们希望统计某个热点数据中访问频次最高的 Top K 数据，并对其访问进行限制。比如：
+
+- 商品 ID 为参数，统计一段时间内最常购买的商品 ID 并进行限制
+- 用户 ID 为参数，针对一段时间内频繁访问的用户 ID 进行限制
+
+![img](https://img-blog.csdnimg.cn/img_convert/16d2ddeff96b7cb68a064b6ec05bde25.png)
+
+
+
+```java
+@RestController
+@Slf4j
+public class FlowLimitController
+{
+
+    ...
+
+    @GetMapping("/testHotKey")
+    @SentinelResource(value = "testHotKey",blockHandler/*兜底方法*/ = "deal_testHotKey")
+    public String testHotKey(@RequestParam(value = "p1",required = false) String p1,
+                             @RequestParam(value = "p2",required = false) String p2) {
+        return "------testHotKey";
+    }
+    
+    /*兜底方法*/
+    public String deal_testHotKey (String p1, String p2, BlockException exception) {
+        return "------deal_testHotKey,o(╥﹏╥)o";  //sentinel系统默认的提示：Blocked by Sentinel (flow limiting)
+    }
+
+}
+```
+
+![img](https://img-blog.csdnimg.cn/img_convert/9620ee4e7e54d48ba7dda394fa1c8cd0.png)
+
+
+
+- 我们可以指定某个参数进行QPS限制
+- 方法testHotKey里面第一个参数只要QPS超过每秒1次，马上降级处理
+- 资源名必须相同
+
+
+
+
+
+**参数例外项**
+
+- 普通 - 超过1秒钟一个后，达到阈值1后马上被限流
+- **我们期望p1参数当它是某个特殊值时，它的限流值和平时不一样**  （可以设置例外）
+- 特例 - 假如当p1的值等于5时，它的阈值可以达到200
+
+![img](https://img-blog.csdnimg.cn/img_convert/3aa08b15109cd346a6083f080a0468fa.png)
+
+
+
+
+
+### 系统规则
+
+系统保护规则是从应用级别的入口流量进行控制，从单台机器的 load、CPU 使用率、平均 RT、入口 QPS 和并发线程数等几个维度监控应用指标，让系统尽可能跑在最大吞吐量的同时保证系统整体的稳定性。
+
+![image-20210726201535850](img\21.png)
+
+
+
+- 在系统规则可以设置**整个项目的全局限制**
+- 包括cpu、线程数、QPS等
+
+
+
+
+
+### @SentinelResource注解配置
+
+#### 配置熔断方法
+
+- @SentinelResource的value可以为请求路径，也可以为指定key
+- 需要与sentinel配置中心key保持一致，并且唯一
+
+
+
+```java
+    @GetMapping("/testA")
+    @SentinelResource(value = "testA",blockHandler= "deal_A")
+    public String testA()
+    {
+        return "------testA";
+    }
+
+
+    public String deal_A(BlockException exception)   //此处需要携带BlockException
+    {
+        return "挂了";
+    }
+```
+
+![image-20210726223231973](img\22.png)
+
+
+
+
+
+#### 自定义限流方法（blockHandler）
+
+- 可以抽取指定的类里的方法作为熔断方法
+- 需要携带**BlockException**
+- 方法为静态方法
+
+```java
+public class HandlerException {
+    public static String handlerException(BlockException exception) {   
+        return "项目已经挂了";
+    }
+
+    public static String handlerException2(BlockException exception) {
+        return "项目已经挂了2";
+    }
+}
+```
+
+**方法配置**
+
+```java
+@GetMapping("/testB")
+@SentinelResource(value = "testB",                     //指明key
+        blockHandlerClass = HandlerException.class,    //指定自定义类
+        blockHandler = "handlerException")			//指定类里的方法、此处也可以直接指定方法名
+public String testB()
+{
+    return "------testB";
+}
+```
+
+![image-20210726225203995](img\23.png)
+
+
+
+
+
+#### 自定义处理异常（fallback）
+
+- Fallback指当该方法发生异常时，跳转自定义处理的方法
+
+```java
+@GetMapping(value = "/consumer/payment/nacos/{id}")
+@SentinelResource(value = "paymentInfo",fallback = "handlerFallback")
+public String paymentInfo(@PathVariable("id") Long id)
+{
+    if (id<0){
+        throw new NullPointerException ("NullPointerException,该ID没有对应记录,空指针异常");
+    }else{
+        return restTemplate.getForObject(serverUrl+"/payment/nacos/"+id,String.class);
+    }
+}
+
+public String handlerFallback(@PathVariable  Long id,Throwable e) {
+    return "发生兜底异常handlerFallback,exception内容 "+id+" "+e;
+}
+```
+
+
+
+
+
+- 若fallback和blockHandler同时配置时，并且同时可以触发
+- 会优先触发**blockHandler**，它会使请求进不了方法
+
+
+
+**忽略异常**（exceptionsToIgnore）
+
+- **exceptionsToIgnore**可以使fallbak忽略某个异常
+
+```java
+@GetMapping(value = "/consumer/payment/nacos/{id}")
+@SentinelResource(value = "paymentInfo",
+        fallback = "handlerFallback",
+        exceptionsToIgnore = {IllegalArgumentException.class})
+public String paymentInfo(@PathVariable("id") Long id)
+{
+    if (id<0){
+        throw new NullPointerException ("NullPointerException,该ID没有对应记录,空指针异常");
+    }else{
+        return restTemplate.getForObject(serverUrl+"/payment/nacos/"+id,String.class);
+    }
+}
+
+public String handlerFallback(@PathVariable  Long id,Throwable e) {
+    return "发生兜底异常handlerFallback,exception内容 "+id+" "+e;
+}
+```
+
+
+
+
+
+### 持久化
+
+- 当某个项目重启时，会导致sentinel限制丢失
+- 为了防止熔断限制不丢失，需要设置持久化，将**方法限制注入进nacos**
+
+
+
+**添加依赖**
+
+```xml
+<dependency>
+    <groupId>com.alibaba.csp</groupId>
+    <artifactId>sentinel-datasource-nacos</artifactId>
+</dependency>
+```
+
+```yaml
+server:
+  port: 83
+
+spring:
+  application:
+    name: nacos-order-consumer
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 121.43.55.23:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8080 
+        port: 8720
+      datasource: #<---------------------------关注点，添加Nacos数据源配置
+        ds1:
+          nacos:
+            server-addr: 121.43.55.23:8848       #配置持久化
+            dataId: cloud-alibaba-sentinel-service
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
+
+
+service-url:
+  nacos-user-service: http://nacos-payment-provider
+```
+
+
+
+添加nacos配置文件
+
+![image-20210728204217489](img\24.png)
+
+```yaml
+[{
+    "resource": "paymentInfo",   #限制方法的 key
+    "IimitApp": "default",       #来源应用；
+    "grade": 1,                  #阈值类型，0表示线程数, 1表示QPS；
+    "count": 1,                  #单机阈值；
+    "strategy": 0,               #流控模式，0表示直接，1表示关联，2表示链路；
+    "controlBehavior": 0,        #流控效果，0表示快速失败，1表示Warm Up，2表示排队等待；
+    "clusterMode": false         #是否集群。
+}]
+```
+
+
+
+成功将该限制持久化
+
+![image-20210728204733781](img\25.png)
+
+
+
+
+
+
+
+## Seata
+
+**问题**
+
+- **一次业务操作需要跨多个数据源或需要跨多个系统进行远程调用，就会产生分布式事务问题**。
+
+![img](https://img-blog.csdnimg.cn/img_convert/9a619fb6a635ac96f2f17734bcda7967.png)
+
+
+
+**Seata**是一款开源的分布式事务解决方案，致力于在微服务架构下提供高性能和简单易用的分布式事务服务。
+
+
+
+
+
+超时异常，加了**@GlobalTransactional**
+
+用@GlobalTransactional标注OrderServiceImpl的create()方法。
+    
+
+```java
+@Service
+@Slf4j
+public class OrderServiceImpl implements OrderService {
+    
+    ...
+
+    /**
+     * 创建订单->调用库存服务扣减库存->调用账户服务扣减账户余额->修改订单状态
+     * 简单说：下订单->扣库存->减余额->改状态
+     */
+    @Override
+    //rollbackFor = Exception.class表示对任意异常都进行回滚
+    @GlobalTransactional(name = "fsp-create-order",rollbackFor = Exception.class)
+    public void create(Order order)
+    {
+		...
+    }
+}
+```
+还是模拟AccountServiceImpl添加超时，下单后数据库数据并没有任何改变，记录都添加不进来，**达到出异常，数据库回滚的效果**。
+
+
+
+
+
+
+
+
+
+**一个典型的分布式事务过程**
+
+分布式事务处理过程的一ID+三组件模型：
+
+- Transaction ID XID 全局唯一的事务ID
+- 三组件概念
+  - TC (Transaction Coordinator) - 事务协调者：维护全局和分支事务的状态，驱动全局事务提交或回滚。
+  - TM (Transaction Manager) - 事务管理器：定义全局事务的范围：开始全局事务、提交或回滚全局事务。
+  - RM (Resource Manager) - 资源管理器：管理分支事务处理的资源，与TC交谈以注册分支事务和报告分支事务的状态，并驱动分支事务提交或回滚。
+
+
+
+
+
+处理过程：
+
+- TM向TC申请开启一个全局事务，全局事务创建成功并生成一个全局唯一的XID；
+- XID在微服务调用链路的上下文中传播；
+- RM向TC注册分支事务，将其纳入XID对应全局事务的管辖；
+- TM向TC发起针对XID的全局提交或回滚决议；
+- TC调度XID下管辖的全部分支事务完成提交或回滚请求。
+
+
+
+
+
+![img](https://img-blog.csdnimg.cn/img_convert/2d2c6aa29c3158413f66d4ef8c1000dc.png)
+
+
+
 
 
 

@@ -570,3 +570,4 @@ worker_cpu_affinity 0000001 00000010 00000100 00001000
 > 第二个: nginx有一个master,有四个woker,每个woker支持最大的连接数1024,支持的最大并发数是多少?
 > 答案：普通的静态访问最大并发数是: worker connections * worker processes /2，
 > 而如果是HTTP作为反向代理来说，最大并发数量应该是worker connections * worker processes/4
+
