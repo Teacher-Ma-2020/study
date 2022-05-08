@@ -73,6 +73,8 @@
 
 在下图中，“ P”是我们的生产者，“ C”是我们的消费者。中间的框是一个队列-RabbitMQ 代 表使用者保留的消息缓冲区
 
+**生产者----队列-----消费者**
+
 ![image-20210713100407942](img\1.png)
 
 **消息生产者**
@@ -652,10 +654,10 @@ channel.basicPublish("",QUEUE_NAME,null,message.getBytes());
 
 
 
-### 发布订阅 模式 （fanout）
+### 广播模式 （fanout）
 
 - 它是将接收到的所有消息广播到**它知道的所有队列**中。
-- 无论routingKey是否项目，**只要队列连接了该交换机**，都会收到消息
+- 无论routingKey是否相同，**只要队列连接了该交换机**，都会收到消息
 
 ![image-20210715203232763](C:\Users\lenovo\AppData\Roaming\Typora\typora-user-images\image-20210715203232763.png)
 
@@ -692,7 +694,7 @@ public class ReceiveLog1 {
         Channel channel = RabbitMqUtils.getChannel();
         //指明一个交换机
         channel.exchangeDeclare(EXCHANGE_NAME,"fanout");
-        //获取队列名称
+        //获取队列名称（临时队列）
         String queueName = channel.queueDeclare().getQueue();
         //建立连接
         channel.queueBind(queueName,EXCHANGE_NAME,"");
@@ -711,9 +713,9 @@ public class ReceiveLog1 {
 
 
 
-### 路由模式（direct）
+### 直接模式（direct）
 
-direct 这种类型来进行替换，这种类型的工作方式是，**消息只去到它绑定的 routingKey 队列中去**。
+direct 的工作方式是，**消息只去到它绑定的 routingKey 队列中去**。
 
 ![image-20210716095624430](img\13.png)
 
@@ -776,7 +778,7 @@ public class ReceiveLogsDirect01 {
 
 
 
-### 主题交换机 （topic）
+### 主题模式（topic）
 
 发送到类型是 topic 交换机的消息的 **routing_key 不能随意写**，
 
@@ -1165,7 +1167,218 @@ spring.rabbitmq.username=root
 spring.rabbitmq.password=123456
 ```
 
-**代码架构图**
+
+
+### 生产者-队列-消费者
+
+![image-20220425110543132](img\30.png)
+
+**生产者**
+
+```java
+@Autowired
+RabbitTemplate rabbitTemplate;
+
+@GetMapping("/sendQueue/{msg}")
+public void sendQueue(@PathVariable("msg") String msg){
+    //想zcj队列发送消息
+    rabbitTemplate.convertAndSend("zcj",msg);
+}
+```
+
+
+
+**消费者**
+
+监听名字为"zcj"的队列，可以指定是否消息持久化，是否自动删除
+
+```java
+@Component
+public class QueueConsumer {
+
+    @RabbitListener(queuesToDeclare = @Queue(value = "zcj",declare = "true",autoDelete = "true"))
+    public void receivel(String message){
+        System.out.println("接受消息"+ message);
+    }
+}
+```
+
+也可以有多个消费者分别处理队列消息
+
+```java
+@Component
+public class QueueConsumer {
+
+    @RabbitListener(queuesToDeclare = @Queue(value = "zcj",declare = "true",autoDelete = "true"))
+    public void receivel(String message){
+        System.out.println("消费者1接受消息"+ message);
+    }
+
+    @RabbitListener(queuesToDeclare = @Queue(value = "zcj",declare = "true",autoDelete = "true"))
+    public void receivel2(String message){
+        System.out.println("消费者2接受消息"+ message);
+    }
+}
+```
+
+
+
+
+
+### 广播模式(fanout)
+
+**代码架构图******
+
+![image-20220425111758513](img\31.png)
+
+当消息发送到交换机时，所有和fanout交换机绑定的队列都会收到消息
+
+```java
+@Autowired
+RabbitTemplate rabbitTemplate;
+
+@GetMapping("/sendQueue/{msg}")
+public void sendQueue(@PathVariable("msg") String msg){
+    //向logs交换机发送消息
+    rabbitTemplate.convertAndSend("logs","",msg);
+}
+```
+
+```java
+@Component
+public class QueueConsumer {
+
+    @RabbitListener(bindings = {
+        @QueueBinding(
+                value = @Queue, //创建队列
+                exchange = @Exchange(value = "logs",type = "fanout")//绑定交换机并指定类型、名称
+        )
+    })
+    public void exchangeMsg(String message){
+        System.out.println("接收到交换机logs消息"+message);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    value = @Queue, //创建队列
+                    exchange = @Exchange(value = "logs",type = "fanout")//绑定交换机并指定类型、名称
+            )
+    })
+    public void exchangeMsg2(String message){
+        System.out.println("接收到交换机logs消息"+message);
+    }
+}
+```
+
+
+
+### 直接模式（direct ）
+
+direct 的工作方式是，**消息只去到它绑定的 routingKey 队列中去**。
+
+![image-20210716095624430](img\13.png)
+
+
+
+```java
+@Autowired
+RabbitTemplate rabbitTemplate;
+
+@GetMapping("/sendQueue/{msg}")
+public void sendQueue(@PathVariable("msg") String msg){
+    //向logs交换机发送消息
+    rabbitTemplate.convertAndSend("logs.direct","info",msg);
+}
+```
+
+```java
+@Component
+public class QueueConsumer {
+
+    @RabbitListener(bindings = {
+        @QueueBinding(
+                value = @Queue, //创建临时队列
+                exchange = @Exchange(value = "logs.direct",type = "direct"),//绑定交换机并指定类型、名称
+                key = {"info","warn"} //指定key
+        )
+    })
+    public void exchangeMsg(String message){
+        System.out.println("info，warn消息"+message);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    value = @Queue, //创建临时队列
+                    exchange = @Exchange(value = "logs.direct",type = "direct"),//绑定交换机并指定类型、名称
+                    key = {"error"}
+            )
+    })
+    public void exchangeMsg2(String message){
+        System.out.println("error消息"+message);
+    }
+}
+```
+
+
+
+
+
+
+
+### 主题模式（topic）
+
+根据routing_key来给队列发送消息
+
+**routing_key规则如下**：
+
+- ***(星号)**可以代替一个单词 
+- **#(井号)**可以替代零个或多个单词
+
+![image-20210716142601686](img\14.png)
+
+
+
+```java
+@GetMapping("/sendQueue/{msg}")
+public void sendQueue(@PathVariable("msg") String msg){
+    //向logs交换机发送消息
+    rabbitTemplate.convertAndSend("logs.topic","error.1",msg);
+}
+```
+
+```java
+@Component
+public class QueueConsumer {
+
+    @RabbitListener(bindings = {
+        @QueueBinding(
+                value = @Queue, //创建临时队列
+                exchange = @Exchange(value = "logs.topic",type = "topic"),//绑定交换机并指定类型、名称
+                key = {"info.*","warn.*"}
+        )
+    })
+    public void exchangeMsg(String message){
+        System.out.println("info，warn消息"+message);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    value = @Queue, //创建临时队列
+                    exchange = @Exchange(value = "logs.topic",type = "topic"),//绑定交换机并指定类型、名称
+                    key = {"error.*"}
+            )
+    })
+    public void exchangeMsg2(String message){
+        System.out.println("error消息"+message);
+    }
+}
+```
+
+
+
+### 另外实现方式
+
+
 
 ![image-20210718103203375](img\25.png)
 
