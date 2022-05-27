@@ -1011,43 +1011,6 @@ public class Client {
 
   
 
-  **五种通知类型**
-
-  ![](D:\DOWN\QQ_Down\319991012\FileRecv\04Spring AOP面向切面编程\img\05aop.png)
-
-
-
-**关键概念**
-
-![](D:\DOWN\QQ_Down\319991012\FileRecv\04Spring AOP面向切面编程\img\02aop.png)
-
-AOP配置过程
-
-* 依赖AspectJ
-* 实现切面类/方法
-* 配置Aspect Bean
-* 定义PointCut
-* 配置Advice
-
-**JoinPoint核心方法**
-
-![](D:\DOWN\QQ_Down\319991012\FileRecv\04Spring AOP面向切面编程\img\03aop.png)
-
-**PointCut切点表达式**
-
-![](D:\DOWN\QQ_Down\319991012\FileRecv\04Spring AOP面向切面编程\img\04aop.png)
-
-* 表达式中的public可以省略
-
-* 通常情况下会使用以下切点表达式
-
-  ```
-  excution(public * com.zhongruan .. *Service.*(..))
-  ```
-
-
-
-
 
 ### 使用自定义类
 
@@ -1120,37 +1083,30 @@ public class DiyProxy {
 
 ### 使用注解配置
 
+1.声明切面类
+
+2.配置aop类型，如环绕、前置、后置等
+
 ```java
-@Component
 @Aspect
-public class DiyProxy {
+@Component
+public class AspectClass {
+	//前置通知
     @Before("execution(* com.jie.div.Shop.*(..))")
     public void before(JoinPoint joinPoint){
+        //获取方法的入参属性
         Object[] args = joinPoint.getArgs();
         System.out.println(joinPoint.getSignature()+" "+Arrays.toString(args));
         System.out.println("before");
-
     }
 
+    //后置通知
     @After("execution(* com.jie.div.Shop.*(..))")
     public void after(){
         System.out.println("after");
     }
-
-    public void doAfterReturning(Throwable th){
-        System.out.println(th.getMessage());
-    }
 }
 ```
-
-xml中配
-
-```xml
-<!--    开启注解支持-->
-    <aop:aspectj-autoproxy/>
-```
-
-
 
 ### 环绕通知
 
@@ -1160,9 +1116,7 @@ xml中配
 public class DiyProxy {
     public void before(){
         System.out.println("欢迎光临");
-
     }
-
 
     public void after(){
         System.out.println("下次再来");
@@ -1174,6 +1128,63 @@ public class DiyProxy {
         joinPoint.proceed();
         after();
     }
+}
+```
+
+- 也可以指定注解执行，切面方法
+- 若方法上有此注解，则执行方法
+
+```java
+@Aspect
+@Component
+public class AspectClass {
+    @Around("@annotation(com.jie.boot_hello.annotation.AopAnnotation)")
+    public Object around(ProceedingJoinPoint joinPoint){
+        System.out.println(Arrays.toString(joinPoint.getArgs()));
+        System.out.println("注解 before");
+        Object proceed = null;
+        try {
+            proceed = joinPoint.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        System.out.println("注解 after");
+        return proceed;
+    }
+
+}
+
+```
+
+
+
+可指定**@Pointcut**，代表切面执行范围
+
+```java
+@Aspect
+@Component
+public class AspectClass {
+
+    @Pointcut("execution(* com.jie.boot_hello.contorller.BatchController.selectBatchList(..))")
+    public void pointCut(){
+    }
+
+    @Around("pointCut()")
+    public Object aroundExe(ProceedingJoinPoint joinPoint){
+        MethodSignature signature = (MethodSignature)joinPoint.getSignature();
+        Method method = signature.getMethod();
+        AopAnnotation annotation = method.getAnnotation(AopAnnotation.class);
+        System.out.println("exe 方法执行before");
+        Object proceed = null;
+        try {
+            proceed = joinPoint.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        System.out.println("exe 方法执行after");
+        return proceed;
+    }
+
 }
 ```
 
