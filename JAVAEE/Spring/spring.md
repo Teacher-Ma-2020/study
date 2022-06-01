@@ -1156,8 +1156,6 @@ public class AspectClass {
 
 ```
 
-
-
 可指定**@Pointcut**，代表切面执行范围
 
 ```java
@@ -1171,8 +1169,10 @@ public class AspectClass {
 
     @Around("pointCut()")
     public Object aroundExe(ProceedingJoinPoint joinPoint){
+        //获取执行方法的反射
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         Method method = signature.getMethod();
+        //获取方法上的注解
         AopAnnotation annotation = method.getAnnotation(AopAnnotation.class);
         System.out.println("exe 方法执行before");
         Object proceed = null;
@@ -1187,6 +1187,12 @@ public class AspectClass {
 
 }
 ```
+
+
+
+
+
+
 
 
 
