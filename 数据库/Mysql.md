@@ -689,9 +689,51 @@ InnoDB必须要有，且只有一个聚集索引：
 
 ## SQL优化
 
-![image-20220324212607307](C:\Users\lenovo\AppData\Roaming\Typora\typora-user-images\image-20220324212607307.png)
+>反向查询不能走索引
+
+```sql
+select name from user where id not in (1,3,4);
+```
+
+**前模糊**查询不能走索引（后模糊查询可以）
+
+```sql
+select name from user where name like '%zhangsan'
+```
+
+区分不明显的字段不建议走索引
+
+- 如 user 表中的性别字段，可以明显区分的才建议创建索引，如身份证等字段。
 
 
+
+字段上进行函数计算不能走索引
+
+```sql
+select name from user where FROM_UNIXTIME(create_time) < CURDATE();
+```
+
+
+
+最左匹配原则
+
+- 如果给 user 表中的 username pwd 字段创建了复合索引那么使用以下SQL 都是可以命中索引:
+
+```sql
+select username from user where username='zhangsan' and pwd ='axsedf1sd'
+
+select username from user where pwd ='axsedf1sd' and username='zhangsan'
+
+select username from user where username='zhangsan'
+```
+
+
+
+但是使用
+
+```sql
+select username from user where pwd ='axsedf1sd'
+```
 
 
 

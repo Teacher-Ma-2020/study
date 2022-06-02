@@ -1151,9 +1151,7 @@ public class AspectClass {
         System.out.println("注解 after");
         return proceed;
     }
-
 }
-
 ```
 
 可指定**@Pointcut**，代表切面执行范围
@@ -1187,12 +1185,6 @@ public class AspectClass {
 
 }
 ```
-
-
-
-
-
-
 
 
 
