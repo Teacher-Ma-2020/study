@@ -727,9 +727,7 @@ select username from user where pwd ='axsedf1sd' and username='zhangsan'
 select username from user where username='zhangsan'
 ```
 
-
-
-但是使用
+但是这样的条件不会走索引
 
 ```sql
 select username from user where pwd ='axsedf1sd'
