@@ -479,7 +479,7 @@ MySQL的数据持久化命令
 ```shell
 docker pull mysql:5.6
 #运行 设置密码 映射端口 保存数据
-docker run -p 3305:3306 -e MYSQL_ROOT_PASSWORD=123456 -d --name mysql_3305 --restart=always -v /root/data:/var/lib/mysql mysql:5.6
+docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d --name mysql_3306 --restart=always -v /root/data:/var/lib/mysql mysql:5.6
 
 -d 后台运行
 -p 端口映射

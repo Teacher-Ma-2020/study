@@ -1681,3 +1681,54 @@ ACID原则：
 
 开启事务
 
+
+
+
+
+## Spring源码read
+
+解析xml bean
+
+![image-20220615103930026](img\9.png)**
+
+- 将**xml、注解**中的bean通过 **beanDefinitionReader** 实现类加载到 **BeanDefinition**中
+
+  - xml的 beanDefinitionReader接口实现为**XmlBeanDefinitionReader**
+
+    ![image-20220615104315353](img\10.png)
+
+  - 注解的 beanDefinitionReader接口实现为**GroovyBeanDefinitionReader**
+
+
+
+**BeanFactoryPostProcessor** 实现类则将  **BeanDefinition** 的bean对象转化可实例对象
+
+![image-20220615140852134](img\11.png)
+
+**BeanFactory**的实现类应该**支持完整的bean声明周期**接口
+
+
+
+
+
+Bean的生命周期
+
+![image-20220615170752241](C:\Users\chengjie.zhou\AppData\Roaming\Typora\typora-user-images\image-20220615170752241.png)
+
+![image-20220615170829025](C:\Users\chengjie.zhou\AppData\Roaming\Typora\typora-user-images\image-20220615170829025.png)
+
+![image-20220615170957519](C:\Users\chengjie.zhou\AppData\Roaming\Typora\typora-user-images\image-20220615170957519.png)
+
+![image-20220615171024521](C:\Users\chengjie.zhou\AppData\Roaming\Typora\typora-user-images\image-20220615171024521.png)
+
+
+
+## 循环依赖
+
+![image-20220616173513113](img\12.png)
+
+1. 创建初始化A对象，此时B属性为null                      （**createBeanInstance**）
+2. 将B的**构造factory**放入三级缓存                             （**addSingletonFactory**）
+3. 给A对应各个属性传值                                             （**applyPropertyValues**）
+4. 此时无法赋值**B对象属性**便会
+
